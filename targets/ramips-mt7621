@@ -31,7 +31,7 @@ device('netgear-wndr3700-v5', 'netgear_wndr3700-v5', {
 
 -- Xiaomi
 
-device('xiaomi-mir-3g', 'xiaomi_mir-3g', {
+device('xiaomi-mi-router-3g', 'xiaomi_mi-router-3g', {
 	factory = false,
 })
 
