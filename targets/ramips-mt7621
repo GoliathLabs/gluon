@@ -9,6 +9,10 @@ device('asus-rt-ac57u-v1', 'asus_rt-ac57u-v1', {
 
 device('asus-rt-ax53u', 'asus_rt-ax53u')
 
+-- COMFAST
+
+device('comfast-cf-ew72-v2', 'comfast_cf-ew72-v2')
+
 -- Cudy
 
 device('cudy-wr1300-v1', 'cudy_wr1300-v1', {
