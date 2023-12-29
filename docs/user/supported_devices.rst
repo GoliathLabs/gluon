@@ -409,6 +409,10 @@ ramips-mt7621
   - RT-AC57U (v1)
   - RT-AX53U
 
+* COMFAST
+
+  - COMFAST CF-EW72 V2
+
 * Cudy
 
   - WR1300 (v1)
