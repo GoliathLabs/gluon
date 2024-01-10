@@ -26,6 +26,11 @@ ath79-generic
 
 * Buffalo
 
+  - CF-EW71 v2
+
+
+* Buffalo
+
   - WZR-HP-AG300H / WZR-600DHP
   - WZR-HP-G300NH (rtl8366s)
 
