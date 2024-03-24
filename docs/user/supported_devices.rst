@@ -48,6 +48,8 @@ ath79-generic
   - DAP-1330 A1 [#lan_as_wan]_
   - DAP-1365 A1 [#lan_as_wan]_
   - DAP-2660 A1 [#lan_as_wan]_
+  - DAP-2680 A1 [#lan_as_wan]_
+  - DAP-2695 A1 [#lan_as_wan]_
   - DIR-505 A1 [#lan_as_wan]_
   - DIR-505 A2 [#lan_as_wan]_
   - DIR-825 B1
@@ -76,11 +78,12 @@ ath79-generic
 
   - LibreRouter v1 [#missing_radios]_
 
-* Netgear
+* NETGEAR
 
   - WNDR3700 (v1, v2)
   - WNDR3800
   - WNR2200 (8M, 16M)
+  - WNDRMAC (v2)
 
 * OCEDO
 
@@ -159,6 +162,7 @@ ath79-generic
   - UniFi AP LR
   - UniFi AP Outdoor+
   - UniFi AP PRO
+  - UniFi Swiss Army Knife Ultra
 
 ath79-mikrotik
 --------------
@@ -181,7 +185,7 @@ ath79-nand
   - GL-AR750S
   - GL-XE300
 
-* Netgear
+* NETGEAR
 
   - WNDR3700 (v4)
   - WNDR4300 (v1)
@@ -248,7 +252,7 @@ ipq40xx-generic
   - PA1200
   - PA2200
 
-* ZyXEL
+* Zyxel
 
   - NBG6617
 
@@ -303,6 +307,7 @@ mediatek-filogic
 * ASUS
 
   - TUF AX4200
+  - TUF AX6000
 
 * Cudy
 
@@ -320,7 +325,7 @@ mediatek-filogic
 
   - UniFi 6 Plus
 
-* ZyXEL
+* Zyxel
 
   - NWA50AX Pro
 
@@ -430,7 +435,7 @@ ramips-mt7621
 
   - GL-MT1300
 
-* Mercusys
+* MERCUSYS
 
   - MR70X (v1)
 
@@ -463,12 +468,12 @@ ramips-mt7621
   - Xiaomi Mi Router 3G (v1, v2)
   - Xiaomi Mi Router 4A (Gigabit Edition v1)
 
-* ZBT
+* Zbtlink
 
   - WG3526-16M
   - WG3526-32M
 
-* ZyXEL
+* Zyxel
 
   - NWA50AX
   - WSM20
