@@ -1,0 +1,245 @@
+From 760cf43032ef451bce82de41bfcbe66d02afb70e Mon Sep 17 00:00:00 2001
+From: GoliathLabs <git@xdfr.de>
+Date: Wed, 10 Jan 2024 00:44:35 +0100
+Subject: [PATCH 1/2] ath79: add support for Comfast CF-EW71 v2
+
+Specifications:
+Qualcomm/Atheros QCA9531
+2x 10/100 Mbps Ethernet, with 48v PoE
+2T2R 2.4 GHz, 802.11b/g/n
+128MB RAM
+16MB SPI Flash
+4x LED (Always On Power, LAN, WAN, WLAN)
+
+Flashing instructions:
+The original firmware is based on OpenWrt, so flashing the sysupgrade image over the factory firmware is sufficient.
+The bootloader has a built-in recovery web-ui. This is the method I used to flash OpenWrt. You can get to the recovery web-ui by holding down the reset button for a few seconds (~5s) while pluggin in the router. The LEDs should start blinking fast and the router should be available on 192.168.1.1 for the recovery.
+
+Tested: Reset button, WAN LED, LAN LED, Power LED (always on, not much to test), WLAN LED, MAC addresses (same as factory firmware).
+
+Signed-off-by: Felix Golatofski <git@xdfr.de>
+---
+ .../ath79/dts/qca9531_comfast_cf-ew71-v2.dts  | 139 ++++++++++++++++++
+ .../generic/base-files/etc/board.d/01_leds    |   1 +
+ target/linux/ath79/image/generic.mk           |  10 ++
+ 3 files changed, 150 insertions(+)
+ create mode 100644 target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts
+
+diff --git a/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts b/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts
+new file mode 100644
+index 0000000000000..55c562b630a1f
+--- /dev/null
++++ b/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts
+@@ -0,0 +1,139 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++
++#include "qca953x.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	compatible = "comfast,cf-ew71", "qca,qca9531";
++	model = "COMFAST CF-EW71";
++
++	aliases {
++		serial0 = &uart;
++		led-boot = &led_wan;
++		led-failsafe = &led_wan;
++		led-upgrade = &led_wan;
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&jtag_disable_pins>;
++
++		lan {
++			label = "blue:lan";
++			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
++		};
++
++		led_wan: wan {
++			label = "blue:wan";
++			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
++		};
++
++		wlan {
++			label = "blue:wlan";
++			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "phy0tpt";
++		};
++	};
++
++	keys {
++		compatible = "gpio-keys";
++
++		reset {
++			label = "reset";
++			linux,code = <KEY_RESTART>;
++			gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
++			debounce-interval = <60>;
++		};
++	};
++
++	watchdog {
++		compatible = "linux,wdt-gpio";
++
++		gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
++		hw_algo = "toggle";
++		hw_margin_ms = <1200>;
++		always-running;
++	};
++};
++
++&pcie0 {
++	status = "okay";
++};
++
++&spi {
++	status = "okay";
++
++	flash@0 {
++		compatible = "winbond,w25q128", "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <25000000>;
++
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			partition@0 {
++				label = "u-boot";
++				reg = <0x000000 0x010000>;
++				read-only;
++			};
++
++			art: partition@10000 {
++				label = "art";
++				reg = <0x010000 0x010000>;
++				read-only;
++
++				nvmem-layout {
++					compatible = "fixed-layout";
++					#address-cells = <1>;
++					#size-cells = <1>;
++
++					macaddr_art_0: macaddr@0 {
++						compatible = "mac-base";
++						reg = <0x0 0x6>;
++						#nvmem-cell-cells = <1>;
++					};
++				};
++			};
++
++			partition@20000 {
++				compatible = "denx,uimage";
++				label = "firmware";
++				reg = <0x020000 0xfd0000>;
++			};
++
++			partition@ff0000 {
++				label = "nvram";
++				reg = <0xff0000 0x010000>;
++				read-only;
++			};
++		};
++	};
++};
++
++&eth0 {
++	status = "okay";
++
++	phy-handle = <&swphy4>;
++
++	nvmem-cells = <&macaddr_art_0 1>;
++	nvmem-cell-names = "mac-address";
++};
++
++&eth1 {
++	nvmem-cells = <&macaddr_art_0 0>;
++	nvmem-cell-names = "mac-address";
++};
++
++&wmac {
++	status = "okay";
++
++	mtd-cal-data = <&art 0x1000>;
++	nvmem-cells = <&macaddr_art_0 3>;
++	nvmem-cell-names = "mac-address";
++};
+diff --git a/target/linux/ath79/generic/base-files/etc/board.d/01_leds b/target/linux/ath79/generic/base-files/etc/board.d/01_leds
+index 525224bec91a9..56c3c27850cee 100644
+--- a/target/linux/ath79/generic/base-files/etc/board.d/01_leds
++++ b/target/linux/ath79/generic/base-files/etc/board.d/01_leds
+@@ -199,6 +199,7 @@ comfast,cf-e560ac)
+ 	ucidef_set_led_switch "lan3" "LAN3" "blue:lan3" "switch0" "0x08"
+ 	ucidef_set_led_switch "lan4" "LAN4" "blue:lan4" "switch0" "0x10"
+ 	;;
++comfast,cf-ew71-v2|\
+ comfast,cf-ew72|\
+ openmesh,om2p-v2|\
+ openmesh,om2p-hs-v1|\
+diff --git a/target/linux/ath79/image/generic.mk b/target/linux/ath79/image/generic.mk
+index 68c4105561513..04e3d3c57bc8f 100644
+--- a/target/linux/ath79/image/generic.mk
++++ b/target/linux/ath79/image/generic.mk
+@@ -845,6 +845,16 @@ define Device/comfast_cf-e560ac
+ endef
+ TARGET_DEVICES += comfast_cf-e560ac
+ 
++define Device/comfast_cf-ew71-v2
++  SOC := qca9531
++  DEVICE_VENDOR := COMFAST
++  DEVICE_MODEL := CF-EW71
++  DEVICE_VARIANT := v2
++  DEVICE_PACKAGES := kmod-usb2 -uboot-envtools -swconfig
++  IMAGE_SIZE := 16192k
++endef
++TARGET_DEVICES += comfast_cf-ew71-v2
++
+ define Device/comfast_cf-ew72
+   SOC := qca9531
+   DEVICE_VENDOR := COMFAST
+
+From 724fe16306dc4c3c936e4ccdcde1912b129d054b Mon Sep 17 00:00:00 2001
+From: Felix <8057646+GoliathLabs@users.noreply.github.com>
+Date: Sun, 24 Mar 2024 20:36:29 +0100
+Subject: [PATCH 2/2] use new format for LED definition
+
+Signed-off-by: Felix <8057646+GoliathLabs@users.noreply.github.com>
+---
+ target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts b/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts
+index 55c562b630a1f..e7a47f075a066 100644
+--- a/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts
++++ b/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts
+@@ -23,17 +23,20 @@
+ 		pinctrl-0 = <&jtag_disable_pins>;
+ 
+ 		lan {
+-			label = "blue:lan";
++			color = <LED_COLOR_ID_BLUE>;
++			function = LED_FUNCTION_LAN;
+ 			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
+-		};
++		}
+ 
+ 		led_wan: wan {
+-			label = "blue:wan";
++			color = <LED_COLOR_ID_BLUE>;
++			function = LED_FUNCTION_WAN;
+ 			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+ 		wlan {
+-			label = "blue:wlan";
++			color = <LED_COLOR_ID_BLUE>;
++			function = LED_FUNCTION_WLAN;
+ 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
+ 			linux,default-trigger = "phy0tpt";
+ 		};
