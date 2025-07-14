@@ -89,6 +89,7 @@ device('comfast-cf-ew71-v2', 'comfast_cf-ew71-v2', {
 	factory = false,
 })
 
+
 -- devolo
 
 device('devolo-dlan-pro-1200+-wifi-ac', 'devolo_dlan-pro-1200plus-ac', {
