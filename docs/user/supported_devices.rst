@@ -66,6 +66,7 @@ ath79-generic
   - 6416A
   - GL-AR150
   - GL-AR300M-Lite
+  - GL-AR300M16
   - GL-AR750
   - GL-USB150 (Microuter)
 
@@ -349,6 +350,10 @@ mediatek-filogic
 
   - UniFi 6 Plus
 
+* Wavlink
+
+  - WL-WN573HX3 [#lan_as_wan]_
+
 * Zyxel
 
   - NWA50AX Pro
@@ -489,6 +494,8 @@ ramips-mt7621
 
 * Ubiquiti
 
+  - EdgeRouter X
+  - EdgeRouter X-SFP
   - UniFi 6 Lite
   - UniFi nanoHD
 
