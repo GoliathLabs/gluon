@@ -1,0 +1,43 @@
+From 9ce23ac84009d720bb6d65605508bf8a737b184d Mon Sep 17 00:00:00 2001
+From: Felix Golatofski <git@xdfr.de>
+Date: Mon, 4 Aug 2025 16:59:39 +0200
+Subject: [PATCH] ath79: fix LED GPIOs for COMFAST CF-EW71 v2
+
+The vendor DTS defined incorrect GPIOs for the LEDs, which caused them
+to not function properly. Initially, the WAN, WLAN LEDs appeared to
+work, but further testing showed that they were non-functional.
+
+This patch corrects the GPIO assignments in the DTS, restoring full LED
+functionality including blinking, except the power LED which cannot be
+software controlled.
+
+Tested on a CF-EW71 v2 unit.
+
+Fixes: ee3a6adc6c22 ("ath79: add support for Comfast CF-EW71 v2")
+Signed-off-by: Felix Golatofski <git@xdfr.de>
+Link: https://github.com/openwrt/openwrt/pull/19665
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+---
+ target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts b/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts
+index c5a96c661360ef..934cb19a58b0dd 100644
+--- a/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts
++++ b/target/linux/ath79/dts/qca9531_comfast_cf-ew71-v2.dts
+@@ -32,13 +32,13 @@
+ 		led_wan: wan {
+ 			function = LED_FUNCTION_WAN;
+ 			color = <LED_COLOR_ID_BLUE>;
+-			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
++			gpios = <&gpio 0 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+ 		wlan {
+ 			function = LED_FUNCTION_WLAN;
+ 			color = <LED_COLOR_ID_BLUE>;
+-			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
++			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
+ 			linux,default-trigger = "phy0tpt";
+ 		};
+ 	};
